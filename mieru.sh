@@ -72,7 +72,7 @@ inst_mita(){
         rm -f mita_"$last_version"_$(archAffix).deb
     fi
 
-    edit_conf
+    edit_conf()
 }
 
 unst_mita(){
@@ -119,6 +119,19 @@ edit_conf(){
     [[ -z $auth_pass ]] && auth_pass=$(date +%s%N | md5sum | cut -c 1-8)
     yellow "将在 mieru 代理节点使用的密码为：$auth_pass"
 
+    yellow "请选择协议类型："
+    echo ""
+    echo -e " ${GREEN}1.${PLAIN} UDP"
+    echo -e " ${GREEN}2.${PLAIN} TCP"
+    echo ""
+    read -rp "请输入选项 [1-2]: " protocol_choice
+    case $protocol_choice in
+        1 ) protocol="UDP" ;;
+        2 ) protocol="TCP" ;;
+        * ) protocol="UDP" ;;
+    esac
+    yellow "将在 mieru 代理节点使用的协议为：$protocol"
+
     yellow "正在检测并设置 MTU 最佳值, 请稍等..."
     check_ip
     MTUy=1500
@@ -156,7 +169,7 @@ edit_conf(){
     "portBindings": [
         {
             "port": $port,
-            "protocol": "UDP"
+            "protocol": "$protocol"
         }
     ],
     "users": [
@@ -204,7 +217,7 @@ EOF
                     "portBindings": [
                         {
                             "port": $port,
-                            "protocol": "UDP"
+                            "protocol": "$protocol"
                         }
                     ]
                 }
@@ -239,16 +252,6 @@ show_conf(){
 menu() {
     clear
     echo "#############################################################"
-    echo -e "#                   ${RED}mieru 一键安装脚本${PLAIN}                      #"
-    echo -e "# ${GREEN}作者${PLAIN}: MisakaNo の 小破站                                  #"
-    echo -e "# ${GREEN}博客${PLAIN}: https://blog.misaka.cyou                            #"
-    echo -e "# ${GREEN}GitHub 项目${PLAIN}: https://github.com/Misaka-blog               #"
-    echo -e "# ${GREEN}GitLab 项目${PLAIN}: https://gitlab.com/Misaka-blog               #"
-    echo -e "# ${GREEN}Telegram 频道${PLAIN}: https://t.me/misakanocchannel              #"
-    echo -e "# ${GREEN}Telegram 群组${PLAIN}: https://t.me/misakanoc                     #"
-    echo -e "# ${GREEN}YouTube 频道${PLAIN}: https://www.youtube.com/@misaka-blog        #"
-    echo "#############################################################"
-    echo ""
     echo -e " ${GREEN}1.${PLAIN} 安装 mieru"
     echo -e " ${GREEN}2.${PLAIN} ${RED}卸载 mieru${PLAIN}"
     echo " -------------"
